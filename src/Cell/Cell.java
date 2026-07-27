@@ -1,4 +1,4 @@
-package Cell;
+package cell;
 
 
 public class Cell {
