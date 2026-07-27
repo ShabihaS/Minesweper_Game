@@ -1,19 +1,14 @@
 package main;
 
-import board.Board;
+import game.Game;
 
 public class Main {
 
     public static void main(String[] args) {
 
-        Board board = new Board();
+        Game game = new Game();
 
-        board.revealCell(0, 0);
-        board.revealCell(0, 1);
-        board.revealCell(5, 5);
-        board.revealCell(9, 9);
-
-        board.render();
+        game.start();
 
     }
 

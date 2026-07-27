@@ -1,4 +1,3 @@
-
 package board;
 
 import cell.Cell;
@@ -6,13 +5,20 @@ import java.util.Random;
 
 public class Board {
 
-  private final int SIZE = 10;
-  private final int NUMBER_OF_MINES = 10;
+  private int SIZE;
+  private int NUMBER_OF_MINES;
 
   private Cell[][] grid;
 
+  // Added for game state
+  private boolean gameOver = false;
+  private boolean won = false;
+
   // Constructor
-  public Board() {
+  public Board(int size, int numberOfMines) {
+
+    SIZE = size;
+    NUMBER_OF_MINES = numberOfMines;
 
     grid = new Cell[SIZE][SIZE];
 
@@ -117,15 +123,68 @@ public class Board {
   // Reveal selected cell
   public boolean revealCell(int row, int col) {
 
+    // Stop game if already finished
+    if (gameOver || won) {
+      return false;
+    }
+
     Cell cell = grid[row][col];
 
+    // Mine clicked
     if (cell.isMine()) {
 
-      return false; // BOOM!
+      gameOver = true;
+
+      revealAllMines();
+
+      return false;
 
     }
 
     cell.reveal();
+
+    // Check if player won
+    if (checkWin()) {
+
+      won = true;
+
+    }
+
+    return true;
+
+  }
+
+  // Reveal all mines after losing
+  private void revealAllMines() {
+
+    for (int row = 0; row < SIZE; row++) {
+
+      for (int col = 0; col < SIZE; col++) {
+
+        grid[row][col].reveal();
+
+      }
+    }
+  }
+
+  // Check win condition
+  private boolean checkWin() {
+
+    for (int row = 0; row < SIZE; row++) {
+
+      for (int col = 0; col < SIZE; col++) {
+
+        Cell cell = grid[row][col];
+
+        // If any safe cell is hidden, player has not won
+        if (!cell.isMine() && !cell.isRevealed()) {
+
+          return false;
+
+        }
+
+      }
+    }
 
     return true;
 
@@ -142,8 +201,16 @@ public class Board {
 
         if (cell.isRevealed()) {
 
-          System.out.print(
-              " " + cell.getAdjacentMineCount() + " ");
+          if (cell.isMine()) {
+
+            System.out.print(" * ");
+
+          } else {
+
+            System.out.print(
+                " " + cell.getAdjacentMineCount() + " ");
+
+          }
 
         } else {
 
@@ -156,6 +223,19 @@ public class Board {
       System.out.println();
 
     }
+
+  }
+
+  // Check game status
+  public boolean isGameOver() {
+
+    return gameOver;
+
+  }
+
+  public boolean hasWon() {
+
+    return won;
 
   }
 
